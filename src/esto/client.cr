@@ -180,7 +180,7 @@ module Esto
       Array(Types::Blip).from_json(json)
     end
 
-    def blip(id: Int32)
+    def blip(id : Int32)
       json = get("/blip/show.json", {id: id})
       Types::Blip.from_json(json)
     end
