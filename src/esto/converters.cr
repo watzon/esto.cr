@@ -1,7 +1,7 @@
 module Esto::Converters
   module StringArrayConverter
     def self.from_json(value : JSON::PullParser) : Array(String)
-      value.read_string.split(' ')
+      value.read_string.split(' ').reject(&.empty?)
     end
 
     def self.to_json(value : Array(String), json : JSON::Builder)
@@ -25,7 +25,7 @@ module Esto::Converters
     end
 
     def self.to_json(value : Time, json : JSON::Builder)
-      json.string(value.to_s("%y-%m-%d %H:%M"))
+      json.string(value.to_s("%G-%m-%d %H:%M"))
     end
   end
 end

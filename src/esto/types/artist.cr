@@ -11,14 +11,14 @@ module Esto::Types
     @[JSON::Field(converter: Esto::Converters::StringArrayConverter)]
     getter other_names : Array(String)
 
-    getter group_name : String
+    getter group_name : String?
 
     getter urls : Array(String)
 
     @[JSON::Field(key: "is_active")]
     getter? active : Bool
 
-    getter version : Int32
+    getter version : Int32?
 
     getter updater_id : Int32
 

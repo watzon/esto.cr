@@ -57,6 +57,134 @@ module Esto
       Array(Types::Post).from_json(json)
     end
 
+    def tags(
+      limit : Int32 = 500,
+      page : Int32 = 1,
+      order : String | Symbol = :date,
+      after_id : Int32 = 0,
+      show_empty_tags : Bool = false,
+      name : String? = nil,
+      name_pattern : String? = nil
+    )
+      order = order.to_s
+      show_empty_tags = show_empty_tags ? 1 : 0
+
+      params = {
+        limit: limit, page: page, order: order, after_id: after_id,
+        show_empty_tags: show_empty_tags, name: name, name_pattern: name_pattern
+      }
+
+      json = get("/tag/index.json", params: params)
+      Array(Types::Tag).from_json(json)
+    end
+
+    def tag(id : Int32)
+      json = get("/tag/show.json", params: {id: id})
+      Types::Tag.from_json(json)
+    end
+
+    def related_tags(names : String | Array(String), type : String? | Symbol? = nil)
+      names = ([names] if names.is_a?(String)).join(" ")
+      json = get("/tag/related.json", params: {tags: names, type: type})
+      Array(Types::Tag).from_json(json)
+    end
+
+    def tag_aliases(
+      page : Int32 = 1,
+      order : String | Symbol = :aliasedtag,
+      query : String? = nil,
+      user : String? = nil,
+      approved : String? | Symbol? | Bool? = nil,
+      forum_post : String? | Symbol? | Bool? = nil
+    )
+      approved = approved == false ? nil : approved.to_s
+      forum_post = forum_post == true ? nil : forum_post.to_s
+      params = {page: page, order: order, query: query, user: user, approved: approved, forum_post: forum_post}
+      json = get("/tag_alias/index.json", params: params)
+      Array(Types::TagAlias).from_json(json)
+    end
+
+    def tag_implications(
+      page : Int32 = 1,
+      order : String | Symbol = :aliasedtag,
+      query : String? = nil,
+      user : String? = nil,
+      approved : String? | Symbol? | Bool? = nil,
+      forum_post : String? | Symbol? | Bool? = nil
+    )
+      approved = approved == false ? nil : approved.to_s
+      forum_post = forum_post == true ? nil : forum_post.to_s
+      params = {page: page, order: order, query: query, user: user, approved: approved, forum_post: forum_post}
+      json = get("/tag_implication/index.json", params: params)
+      Array(Types::TagImplication).from_json(json)
+    end
+
+    def artists(
+      name : String? = nil,
+      limit : Int32? = 100,
+      order : String | Symbol = :name,
+      page : Int32 = 1
+    )
+      params = {name: name, limit: limit, order: order.to_s, page: page}
+      json = get("/artist/index.json", params: params)
+      Array(Types::Artist).from_json(json)
+    end
+
+    def comment(id : Int32)
+      json = get("/comment/show.json", {id: id})
+      Types::Comment.from_json(json)
+    end
+
+    def comments(
+      post_id : Int32? = nil,
+      page : Int32 = 1,
+      status : String? | Symbol? = nil
+    )
+      params = {post_id: post_id, page: page, status: status}
+      json = get("/comment/index.json", params: params)
+      Array(Types::Comment).from_json(json)
+    end
+
+    def search_comments(
+      query : String,
+      results : String | Symbol = :fuzzy,
+      date_start : Time? = nil,
+      date_end : Time? = nil,
+      order : String | Symbol = :date,
+      post_id : Int32? = nil,
+      page : Int32 = 1,
+      user : String? = nil,
+      user_id : Int32? = nil,
+      status : String | Symbol = :any
+    )
+      date_start = date_start.to_s("%G-%m-%d") if date_start.is_a?(Time)
+      date_end = date_end.to_s("%G-%m-%d") if date_end.is_a?(Time)
+      params = {
+        query: query, results: results.to_s, date_start: date_start, date_end: date_end,
+        order: order.to_s, post_id: post_id, page: page, user: user, user_id: user_id, status: status.to_s
+      }
+      json = get("/comment/search.json", params: params)
+      Array(Types::Comment).from_json(json)
+    end
+
+    def blips(
+      name : String? = nil,
+      body : String? = nil,
+      page : Int32 = 1,
+      limit : Int32 = 100,
+      status : String | Symbol = :any,
+      response_to : Int32? = nil
+    )
+      params = {name: name, body: body, page: page, limit: limit, status: status, response_to: response_to}
+      json = get("/blip/index.json")
+      Array(Types::Blip).from_json(json)
+    end
+
+    def blip(id: Int32)
+      json = get("/blip/show.json", {id: id})
+      Types::Blip.from_json(json)
+    end
+
     def request(method, path, *, params = nil, form = nil)
       options = Halite::Options.new(params: params, form: form)
       prevent_flood
