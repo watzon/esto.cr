@@ -1,0 +1,13 @@
+name: esto
+version: 0.1.0
+
+authors:
+  - Chris Watson <cawatson1993@gmail.com>
+
+dependencies:
+  halite:
+    github: icyleaf/halite
+
+crystal: 0.31.1
+
+license: MIT
